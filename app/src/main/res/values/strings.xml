@@ -1,3 +1,17 @@
 <resources>
     <string name="app_name">Betterzon</string>
+    <string name="MainActivity_String">Betterzon</string>
+
+    <string name="RegisterActivity_String">Bienvenido</string>
+    <string name="RegisterActivity_BotonRegistrate">Registrate</string>
+    <string name="RegisterActivity_BotonIngresa">Ya tengo cuenta</string>
+
+    <string name="InputCedula">Cedula</string>
+    <string name="InputNombre">Nombre</string>
+    <string name="InputCelular">Celular</string>
+    <string name="InputContraseña">Contraseña</string>
+
+    <string name="LoginActivity_String">Bienvenido de vuelta</string>
+    <string name="LoginActivity_BotonIngresa">Ingresa</string>
+    <string name="LoginActivity_BotonRegistrate">Crear cuenta</string>
 </resources>
