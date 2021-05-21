@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/primer_fragmento"
+        android:icon="@android:drawable/star_on"
+        android:title="@string/bottomActivity_primerFragmento"/>
+
+    <item
+        android:id="@+id/segundo_fragmento"
+        android:icon="@android:drawable/stat_notify_chat"
+        android:title="@string/bottomActivity_segundoFragmento"/>
+
+    <item
+        android:id="@+id/tercer_fragmento"
+        android:icon="@android:drawable/ic_input_get"
+        android:title="@string/bottomActivity_tercerFragmento"/>
+
+</menu>
