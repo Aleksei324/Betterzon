@@ -25,4 +25,13 @@
     <string name="fragment2_descripcion">Escribe la descripción de tu proyecto aquí</string>
     <string name="fragment2_button">Crear\nproyecto</string>
 
+    <string name="fragment1_queryHint">Busca materiales</string>
+    <string name="fragment1_wood">Maderas</string>
+    <string name="fragment1_clay">Arcillas</string>
+    <string name="fragment1_steel">Metales</string>
+    <string name="fragment1_plastic">Plasticos</string>
+    <string name="fragment1_glass">Vidrios</string>
+    <string name="fragment1_petreo">Petreos</string>
+    <string name="fragment1_concret">Concretos</string>
+
 </resources>

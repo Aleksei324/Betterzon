@@ -35,33 +35,31 @@ public class HomeActivity extends AppCompatActivity {
         navigation.setSelectedItemId(R.id.segundo_fragmento);
     }
 
-    protected void onResume() {
-        super.onResume();
+    protected void onStart() {
+        super.onStart();
 
         spinner1 = findViewById(R.id.spinnerCrearProyecto);
         String [] opciones = {"Vivienda nueva", "Remodelación"};
         spinner1.setAdapter( new ArrayAdapter<>(
                 this, android.R.layout.simple_spinner_dropdown_item, opciones) );
 
-    } // onResume
+    } // onStart
 
-    private final BottomNavigationView.OnNavigationItemSelectedListener ISlistener = new BottomNavigationView.OnNavigationItemSelectedListener() {
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()){
-                case R.id.primer_fragmento:
-                    loadFragment(materiales);
-                    return true;
-                case R.id.segundo_fragmento:
-                    loadFragment(proyecto);
-                    return true;
-                case R.id.tercer_fragmento:
-                    loadFragment(donaciones);
-                    return true;
-            }
-            return false;
+    // override onNavItemSelected
+    private final BottomNavigationView.OnNavigationItemSelectedListener ISlistener = item -> {
+        switch (item.getItemId()){
+            case R.id.primer_fragmento:
+                loadFragment(materiales);
+                return true;
+            case R.id.segundo_fragmento:
+                loadFragment(proyecto);
+                return true;
+            case R.id.tercer_fragmento:
+                loadFragment(donaciones);
+                return true;
+        }
+        return false;
 
-        } // override onNavItemSelected
     };
     public void loadFragment(Fragment f){
         FragmentTransaction transaccion = getSupportFragmentManager().beginTransaction();
