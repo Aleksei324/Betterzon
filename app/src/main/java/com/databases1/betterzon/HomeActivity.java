@@ -1,15 +1,11 @@
 package com.databases1.betterzon;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class HomeActivity extends AppCompatActivity {
@@ -17,7 +13,7 @@ public class HomeActivity extends AppCompatActivity {
     // crear componentes
     Spinner spinner1;
 
-    // crear fragmentos
+    // Crear fragmentos
     PrimerFragmento materiales = new PrimerFragmento();
     SegundoFragmento proyecto = new SegundoFragmento();
     TercerFragmento donaciones = new TercerFragmento();

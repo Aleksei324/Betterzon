@@ -3,10 +3,18 @@ package com.databases1.betterzon;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.databases1.betterzon.clases.Donacion;
+import com.databases1.betterzon.clases.Material;
+import com.databases1.betterzon.clases.Persona;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -14,6 +22,9 @@ import android.view.ViewGroup;
  * create an instance of this fragment.
  */
 public class TercerFragmento extends Fragment {
+
+    private RecyclerView recyclerView;
+    private ArrayList<Donacion> elementos;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -58,7 +69,14 @@ public class TercerFragmento extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_tercer_fragmento, container, false);
+        View v = inflater.inflate(R.layout.fragment_tercer_fragmento, container, false);
+        recyclerView = v.findViewById(R.id.recyclerDonaciones);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(v.getContext()));
+        recyclerView.setAdapter(new ListAdapterDonaciones(v.getContext()));
+        return v;
     }
+
 }

@@ -74,7 +74,8 @@
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextMultiLine" />
+        app:layout_constraintTop_toBottomOf="@+id/editTextTextMultiLine"
+        app:cornerRadius="20dp"/>
 
     <Spinner
         android:id="@+id/spinnerCrearProyecto"

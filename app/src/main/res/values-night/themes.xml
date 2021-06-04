@@ -3,16 +3,16 @@
     <style name="Theme.Betterzon" parent="Theme.MaterialComponents.DayNight.NoActionBar">
 
         <!-- Primary brand color (color del boton) -->
-        <item name="colorPrimary">@color/teal_200</item>
+        <item name="colorPrimary">@color/teal_night</item>
         <!-- color de status bar -->
         <item name="colorPrimaryVariant">@color/black_300_blue</item>
         <!-- color del texto de los botones -->
         <item name="colorOnPrimary">@color/white</item>
 
         <!-- Secondary brand color. (color de la linea de borde de textbox) -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_200</item>
-        <item name="colorOnSecondary">@color/teal_200</item>
+        <item name="colorSecondary">@color/teal_night</item>
+        <item name="colorSecondaryVariant">@color/teal_night</item>
+        <item name="colorOnSecondary">@color/teal_night</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
@@ -24,7 +24,7 @@
         <!-- fondo -->
         <item name="android:background">@color/black_300_blue</item>
         <!-- color de los iconos -->
-        <item name="itemIconTint">@color/teal_200</item>
+        <item name="itemIconTint">@color/teal_night</item>
         <!-- color del texto -->
         <item name="itemTextColor">@color/teal_200</item>
     </style>
