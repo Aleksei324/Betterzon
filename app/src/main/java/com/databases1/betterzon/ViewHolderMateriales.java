@@ -5,24 +5,24 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import com.databases1.betterzon.clases.Donacion;
+import com.databases1.betterzon.clases.Material;
 
-public class ViewHolderDonaciones extends RecyclerView.ViewHolder {
+public class ViewHolderMateriales extends RecyclerView.ViewHolder {
 
     ImageView iconImage;
-    TextView nombre_material;
     TextView nombre;
+    TextView precio;
 
-    public ViewHolderDonaciones(@NonNull View itemView) {
+    public ViewHolderMateriales(@NonNull View itemView) {
         super(itemView);
-        iconImage = itemView.findViewById(R.id.card_image_donacion);
-        nombre_material = itemView.findViewById(R.id.card_text1_donacion);
-        nombre = itemView.findViewById(R.id.card_text2_donacion);
+        iconImage = itemView.findViewById(R.id.card_image_material);
+        nombre = itemView.findViewById(R.id.card_text1_material);
+        precio = itemView.findViewById(R.id.card_text2_material);
     }
 
-    public void bindData(Donacion d){
+    public void bindData(Material m){
 
-        switch (d.getM().getTipo()){
+        switch (m.getTipo()){
 
             case "Madera":
                 iconImage.setImageResource(R.drawable.ic_log);
@@ -53,8 +53,9 @@ public class ViewHolderDonaciones extends RecyclerView.ViewHolder {
                 break;
         }
 
-        nombre_material.setText(d.getM().getNombre());
-        nombre.setText(d.getP().getNombre());
+        nombre.setText(m.getNombre());
+        precio.setText(R.string.fragment1_precio);
+        precio.setText(String.format("%s%s", precio.getText(), m.getPrecio()));
 
     } // bindData
 

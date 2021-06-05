@@ -4,14 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import android.os.Bundle;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class HomeActivity extends AppCompatActivity {
-
-    // crear componentes
-    Spinner spinner1;
 
     // Crear fragmentos
     PrimerFragmento materiales = new PrimerFragmento();
@@ -30,16 +25,6 @@ public class HomeActivity extends AppCompatActivity {
         loadFragment(proyecto);
         navigation.setSelectedItemId(R.id.segundo_fragmento);
     }
-
-    protected void onStart() {
-        super.onStart();
-
-        spinner1 = findViewById(R.id.spinnerCrearProyecto);
-        String [] opciones = {"Vivienda nueva", "Remodelación"};
-        spinner1.setAdapter( new ArrayAdapter<>(
-                this, android.R.layout.simple_spinner_dropdown_item, opciones) );
-
-    } // onStart
 
     // override onNavItemSelected
     private final BottomNavigationView.OnNavigationItemSelectedListener ISlistener = item -> {

@@ -4,26 +4,26 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.databases1.betterzon.clases.Donacion;
 import com.databases1.betterzon.clases.Material;
 import com.databases1.betterzon.clases.Persona;
-
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedList;
 
 public class ListAdapterDonaciones extends RecyclerView.Adapter<ViewHolderDonaciones> {
-    private List<Donacion> listaItems;
     private LayoutInflater mInflador;
+    private LinkedList<Donacion> listaItemsOriginal;
+    private LinkedList<Donacion> listaItems;
 
     public ListAdapterDonaciones(Context contexto) {
         this.mInflador = LayoutInflater.from(contexto);
-        this.listaItems = new ArrayList<>();
 
+        this.listaItemsOriginal = new LinkedList<>();
         crearListaDonaciones();
+
+        this.listaItems = new LinkedList<>();
+        this.listaItems.addAll(this.listaItemsOriginal);
     }
 
     @Override
@@ -42,27 +42,50 @@ public class ListAdapterDonaciones extends RecyclerView.Adapter<ViewHolderDonaci
         holder.bindData(listaItems.get(position));
     }
 
-    public void setItems(List<Donacion> items){
-        this.listaItems = items;
-    }
-
     public void crearListaDonaciones(){
 
-        this.listaItems.clear();
-
         // TODO: 2021-06-03 La base de datos debe llenar esta lista
-        this.listaItems.add(new Donacion(new Persona(
+
+        this.listaItemsOriginal.add(new Donacion(new Persona(
                 123, 123, "Juan Morales", "0000", "Usuario", "123"),
                 new Material(
                         123,"Madera roja", "Madera", "La mejor marca", "Una tabla de madera", 123.4)));
-        this.listaItems.add(new Donacion(new Persona(
+
+        this.listaItemsOriginal.add(new Donacion(new Persona(
                 456, 456, "Roberto Menez", "0000", "Usuario", "456"),
                 new Material(
                         456,"Acero inoxidable", "Metal", "La mejor marca", "Un pedazo oxidado", 456.7)));
-        this.listaItems.add(new Donacion(new Persona(
+
+        this.listaItemsOriginal.add(new Donacion(new Persona(
                 789, 789, "Luis Salazar", "0000", "Usuario", "123"),
                 new Material(
                         789,"Vidrio reforzado", "Vidrio", "La mejor marca", "Un vidrio oscuro resistente", 789.0)));
     }
+
+    public void filterSearch(String search){
+
+        String s = search.trim().toLowerCase();
+        listaItems.clear();
+
+        if (s.length() == 0){
+
+            listaItems.addAll(listaItemsOriginal);
+        }
+        else {
+
+            for (Donacion d : listaItemsOriginal) {
+
+                if (d.getM().getNombre().toLowerCase().contains(s)) {
+
+                    listaItems.add(d);
+                }
+
+            } // for
+
+        } // else
+
+        notifyDataSetChanged();
+
+    } // filter search
 
 } // class

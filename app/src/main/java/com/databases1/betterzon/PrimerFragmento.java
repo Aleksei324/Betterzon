@@ -1,19 +1,24 @@
 package com.databases1.betterzon;
 
 import android.os.Bundle;
-
 import androidx.fragment.app.Fragment;
-
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link PrimerFragmento#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class PrimerFragmento extends Fragment {
+public class PrimerFragmento extends Fragment implements SearchView.OnQueryTextListener {
+
+    private RecyclerView recyclerView1;
+    private SearchView searchView1;
+    private ListAdapterMateriales adapter;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -58,7 +63,31 @@ public class PrimerFragmento extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_primer_fragmento, container, false);
+        View v = inflater.inflate(R.layout.fragment_primer_fragmento, container, false);
+
+        recyclerView1 = v.findViewById(R.id.recycler_materiales);
+        searchView1 = v.findViewById(R.id.searchViewMateriales);
+
+        recyclerView1.setHasFixedSize(true);
+        recyclerView1.setLayoutManager(new LinearLayoutManager(v.getContext()));
+        adapter = new ListAdapterMateriales(v.getContext());
+        recyclerView1.setAdapter(adapter);
+
+        searchView1.setOnQueryTextListener(this);
+        return v;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        adapter.filterSearch(query);
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        adapter.filterSearch(newText);
+        return false;
     }
 }

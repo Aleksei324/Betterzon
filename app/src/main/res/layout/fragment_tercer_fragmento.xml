@@ -14,7 +14,7 @@
         app:layout_constraintGuide_percent="0.5"/>
 
     <SearchView
-        android:id="@+id/searchView2"
+        android:id="@+id/searchViewDonaciones"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:iconifiedByDefault="false"
@@ -30,6 +30,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchView2" />
+        app:layout_constraintTop_toBottomOf="@+id/searchViewDonaciones" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
