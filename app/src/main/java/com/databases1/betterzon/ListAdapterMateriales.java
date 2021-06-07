@@ -10,6 +10,8 @@ import com.databases1.betterzon.clases.Material;
 import java.util.LinkedList;
 
 public class ListAdapterMateriales extends RecyclerView.Adapter<ViewHolderMateriales> {
+
+    // Atributos
     private LayoutInflater mInflador;
     private LinkedList<Material> listaItemsOriginal;
     private LinkedList<Material> listaItems;

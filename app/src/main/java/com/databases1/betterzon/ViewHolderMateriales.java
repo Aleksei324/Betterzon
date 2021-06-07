@@ -9,6 +9,7 @@ import com.databases1.betterzon.clases.Material;
 
 public class ViewHolderMateriales extends RecyclerView.ViewHolder {
 
+    // Atributos
     ImageView iconImage;
     TextView nombre;
     TextView precio;

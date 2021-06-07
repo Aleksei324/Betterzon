@@ -12,6 +12,8 @@ import com.databases1.betterzon.clases.Persona;
 import java.util.LinkedList;
 
 public class ListAdapterDonaciones extends RecyclerView.Adapter<ViewHolderDonaciones> {
+
+    // Atributos
     private LayoutInflater mInflador;
     private LinkedList<Donacion> listaItemsOriginal;
     private LinkedList<Donacion> listaItems;

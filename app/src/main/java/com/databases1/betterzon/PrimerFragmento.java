@@ -16,6 +16,7 @@ import android.widget.SearchView;
  */
 public class PrimerFragmento extends Fragment implements SearchView.OnQueryTextListener {
 
+    // Atributos
     private RecyclerView recyclerView1;
     private SearchView searchView1;
     private ListAdapterMateriales adapter;

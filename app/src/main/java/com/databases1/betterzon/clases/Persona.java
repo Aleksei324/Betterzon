@@ -2,6 +2,7 @@ package com.databases1.betterzon.clases;
 
 public class Persona {
 
+    // Atributo
     private int cedula, celular;
     private String nombre, contrasena, tipo, ip;
     private boolean inhabilitado = false;

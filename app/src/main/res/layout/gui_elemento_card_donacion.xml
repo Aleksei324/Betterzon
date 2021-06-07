@@ -44,14 +44,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/placeholder"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:textIsSelectable="true"/>
 
             <TextView
                 android:id="@+id/card_text2_donacion"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/placeholder"
-                android:textSize="12sp" />
+                android:textSize="12sp"
+                android:textIsSelectable="true"/>
         </LinearLayout>
 
         <Button
