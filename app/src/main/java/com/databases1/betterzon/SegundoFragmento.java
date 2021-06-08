@@ -40,9 +40,9 @@ public class SegundoFragmento extends Fragment{
     private ClienteSocketLlaves clienteL;
     private SharedPreferences datosServidorPreference, estadoPreference, llaveGuardadaPreference, ipPreference, SQLPreference;
     private SharedPreferences.Editor editor1;
-    private byte[] SQLPassword, SQLusuario, SQLip;
+    private byte[] SQLPassword, SQLusuario, SQLip, ipServidor;
     private int contador;
-    private String ipServidor, passwordServidor, json, ipSuya, SQLPasswordFinal, SQLusuarioFinal, SQLipFinal, llave, instruccion;
+    private String json, ipSuya, SQLPasswordFinal, SQLusuarioFinal, SQLipFinal, llave, instruccion, ipServidorFinal;
     private Gson gson;
     private ResultSet resultadoQuery;
 
@@ -106,9 +106,10 @@ public class SegundoFragmento extends Fragment{
         llaveGuardadaPreference = requireActivity().getSharedPreferences("llaves_propias", MODE_PRIVATE);
         SQLPreference = requireActivity().getSharedPreferences("SQL", MODE_PRIVATE);
         ipPreference = requireActivity().getSharedPreferences("IPs", MODE_PRIVATE);
-        ipServidor = datosServidorPreference.getString("ip", null);
-        passwordServidor = datosServidorPreference.getString("password", null);
-        clienteL = new ClienteSocketLlaves(ipServidor);
+        json = datosServidorPreference.getString("ip", null);
+        ipServidor = gson.fromJson(json, byte[].class);
+        ipServidorFinal = EncriptadoAES.decifrar(ipServidor, llave);
+        clienteL = new ClienteSocketLlaves(ipServidorFinal);
         gson = new Gson();
 
         String [] opciones = {"Vivienda nueva", "Remodelación"};
@@ -225,7 +226,7 @@ public class SegundoFragmento extends Fragment{
             editor1.apply();
 
             EmpaquetadoDeLlaves llaveEmpaquetada = new EmpaquetadoDeLlaves(llavesCreadas.getPublic(),
-                    EncriptadoAES.encriptar(ipSuya, passwordServidor));
+                    EncriptadoAES.encriptar(ipSuya, llave));
 
             // Enviar llave
             clienteL.enviarLlaves(llaveEmpaquetada);

@@ -26,7 +26,6 @@ public class LoginActivity extends AppCompatActivity implements Runnable{
     private String json, llave, SQLPasswordFinal, SQLusuarioFinal, SQLipFinal, instruccion, nombre, password, tipo, ipMia;
     private int cedula, celular, inhabilitado;
     private byte[] SQLPassword, SQLusuario, SQLip;
-    private Persona personaCred;
     private ResultSet personaResultante;
     private EditText campoCedula, campoPassword;
 
