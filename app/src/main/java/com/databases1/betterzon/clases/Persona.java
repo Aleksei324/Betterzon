@@ -4,14 +4,14 @@ public class Persona {
 
     // Atributo
     private int cedula, celular;
-    private String nombre, contrasena, tipo, ip;
+    private String nombre, password, tipo, ip;
     private boolean inhabilitado = false;
 
-    public Persona(int cedula, int celular, String nombre, String contrasena, String tipo, String ip) {
+    public Persona(int cedula, int celular, String nombre, String password, String tipo, String ip) {
         this.cedula = cedula;
         this.celular = celular;
         this.nombre = nombre;
-        this.contrasena = contrasena;
+        this.password = password;
         this.tipo = tipo;
         this.ip = ip;
     }
@@ -40,12 +40,12 @@ public class Persona {
         this.nombre = nombre;
     }
 
-    public String getContrasena() {
-        return contrasena;
+    public String getPassword() {
+        return password;
     }
 
-    public void setContrasena(String contrasena) {
-        this.contrasena = contrasena;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getTipo() {

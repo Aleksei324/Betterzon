@@ -27,7 +27,6 @@
         </activity>
 
         <service android:name=".SegundoPlanoMensajesYLlaves"/>
-        <service android:name=".SegundoPlanoMain"/>
 
     </application>
 </manifest>

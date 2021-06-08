@@ -86,10 +86,9 @@ public class MainActivity extends AppCompatActivity {
         editor1.putString("password", json);
         editor1.apply();
 
-        // servicio en segundo plano
-        startService(new Intent(this, SegundoPlanoMain.class));
-
         if (credUsuarioPreferences.getBoolean("existe", false)){
+
+            // TODO: 2021-06-08 Confirmar que sean validas
 
             // servicio en segundo plano
             startService(new Intent(this, SegundoPlanoMensajesYLlaves.class));

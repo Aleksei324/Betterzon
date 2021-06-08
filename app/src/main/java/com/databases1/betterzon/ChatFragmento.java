@@ -31,7 +31,7 @@ public class ChatFragmento extends Fragment {
     private ListAdapterChat adapter;
     private Button boton_send;
     private EditText textbox1;
-    private SharedPreferences servidorPreference, llaveDelOtroPreference, llaveMiaPreference, ipOtroPreference;
+    private SharedPreferences servidorPreference, llaveDelOtroPreference, ipOtroPreference;
     private String ipServidor, ipOtro, passwordServidor, json;
     private ClienteSocketMensajes clienteM;
     private PublicKey llavePublicaOtro;
@@ -89,7 +89,6 @@ public class ChatFragmento extends Fragment {
         textbox1 = v.findViewById(R.id.editTextMensaje);
         servidorPreference = requireActivity().getSharedPreferences("servidor", MODE_PRIVATE);
         llaveDelOtroPreference = requireActivity().getSharedPreferences("llaves_otro", MODE_PRIVATE);
-        llaveMiaPreference = requireActivity().getSharedPreferences("llaves_propias", MODE_PRIVATE);
         ipOtroPreference = requireActivity().getSharedPreferences("IPs", MODE_PRIVATE);
         ipServidor = servidorPreference.getString("ip", null);
         passwordServidor = servidorPreference.getString("password", null);
