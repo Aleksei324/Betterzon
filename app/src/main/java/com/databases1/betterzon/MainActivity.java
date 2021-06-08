@@ -7,7 +7,6 @@ import android.os.Bundle;
 import com.databases1.betterzon.clases.EncriptadoAES;
 import com.databases1.betterzon.clases.Persona;
 import com.google.gson.Gson;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -47,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements Runnable{
         super.onResume();
 
         Thread hilo1 = new Thread() {
+
             @Override
             public void run() {
                 esperarInicializarTodoYCambiarActivity();
@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements Runnable{
         // Guardar la ip de mySQL
         editor1 = SQLPreferences.edit();
         json = gson.toJson(EncriptadoAES.encriptar(
-                "URI SQL",
+                "URI",
                 llave)); // TODO: 2021-06-07 Coloca el URI de la base de datos
 
         editor1.putString("ip", json);

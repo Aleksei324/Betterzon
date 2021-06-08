@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
 import com.databases1.betterzon.clases.ClienteSocketLlaves;
 import com.databases1.betterzon.clases.EmpaquetadoDeLlaves;
@@ -17,6 +18,11 @@ import com.databases1.betterzon.clases.EncriptadoAES;
 import com.databases1.betterzon.clases.EncriptadoRSA;
 import com.google.gson.Gson;
 import java.security.KeyPair;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import static android.content.Context.MODE_PRIVATE;
 
 /**
@@ -24,17 +30,21 @@ import static android.content.Context.MODE_PRIVATE;
  * Use the {@link SegundoFragmento#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SegundoFragmento extends Fragment {
+public class SegundoFragmento extends Fragment{
 
     // Atributos
-    ChatFragmento frag = new ChatFragmento();
-    Spinner spinner1;
-    Button boton1;
-    ClienteSocketLlaves clienteL;
-    SharedPreferences datosServidorPreference, estadoPreference, llaveGuardadaPreference, ipPreference;
-    SharedPreferences.Editor editor1;
-    String ipServidor, passwordServidor, json, ipSuya;
-    Gson gson;
+    private ChatFragmento frag = new ChatFragmento();
+    private Spinner spinner1;
+    private EditText presupuesto, direccion, descripcion;
+    private Button boton1;
+    private ClienteSocketLlaves clienteL;
+    private SharedPreferences datosServidorPreference, estadoPreference, llaveGuardadaPreference, ipPreference, SQLPreference;
+    private SharedPreferences.Editor editor1;
+    private byte[] SQLPassword, SQLusuario, SQLip;
+    private int contador;
+    private String ipServidor, passwordServidor, json, ipSuya, SQLPasswordFinal, SQLusuarioFinal, SQLipFinal, llave, instruccion;
+    private Gson gson;
+    private ResultSet resultadoQuery;
 
 
     // TODO: Rename parameter arguments, choose names that match
@@ -85,11 +95,16 @@ public class SegundoFragmento extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_segundo_fragmento, container, false);
 
+        llave = "Escribe tu contraseña para la llave aqui"; // TODO: 2021-06-07 this
         spinner1 = v.findViewById(R.id.spinnerCrearProyecto);
+        presupuesto = v.findViewById(R.id.editTextNumberPresupuesto);
+        direccion = v.findViewById(R.id.editTextDireccion);
+        descripcion = v.findViewById(R.id.editTextDescripcion);
         boton1 = v.findViewById(R.id.buttonCrearProyecto);
         datosServidorPreference = requireActivity().getSharedPreferences("servidor", MODE_PRIVATE);
         estadoPreference = requireActivity().getSharedPreferences("estados", MODE_PRIVATE);
         llaveGuardadaPreference = requireActivity().getSharedPreferences("llaves_propias", MODE_PRIVATE);
+        SQLPreference = requireActivity().getSharedPreferences("SQL", MODE_PRIVATE);
         ipPreference = requireActivity().getSharedPreferences("IPs", MODE_PRIVATE);
         ipServidor = datosServidorPreference.getString("ip", null);
         passwordServidor = datosServidorPreference.getString("password", null);
@@ -104,45 +119,126 @@ public class SegundoFragmento extends Fragment {
             @Override
             public void onClick(View v) {
 
-                // TODO: 2021-06-06 Confirmar que los datos son validos y enviarlos
+                if ( !(presupuesto.getText().toString().equals("") || direccion.getText().toString().equals("")) ){
 
-                // Guarda el nuevo estado para que siempre se ejecute ChatFragment
-                editor1 = estadoPreference.edit();
-                editor1.putString("proyecto", "Chat");
-                editor1.apply();
+                    Thread hiloParaServicio = new Thread() {
 
-                // servicio en segundo plano
-                requireActivity().startService(new Intent(requireActivity(), SegundoPlanoMensajesYLlaves.class));
+                        @Override
+                        public void run() {
+                            segundoPlano();
+                        } // run
 
-                // TODO: 2021-06-06 obtener ip de la base de datos = ipSuya
+                    }; // hilo
 
-                // Guardar ip del otro
-                editor1 = ipPreference.edit();
-                editor1.putString("del_otro", ipSuya);
-                editor1.apply();
+                    hiloParaServicio.start();
 
-                KeyPair llavesCreadas = EncriptadoRSA.crearLlaves();
+                } // if
 
-                // Guardar la llave privada propia
-                editor1 = llaveGuardadaPreference.edit();
-                json = gson.toJson(llavesCreadas.getPrivate());
-                editor1.putString("llave_privada", json);
-                editor1.apply();
+            } // onclick
 
-                EmpaquetadoDeLlaves llaveEmpaquetada = new EmpaquetadoDeLlaves(llavesCreadas.getPublic(),
-                        EncriptadoAES.encriptar(ipSuya, passwordServidor));
-
-                // Enviar llave
-                clienteL.enviarLlaves(llaveEmpaquetada);
-
-                // Cambia el fragmento actual a ChatFragment
-                FragmentTransaction transaccion = requireActivity().getSupportFragmentManager().beginTransaction();
-                transaccion.replace(R.id.frame, frag);
-                transaccion.commit();
-            }
-        });
+        }); // listener
 
         return v;
     }
+
+    public void segundoPlano() {
+
+        // Obtener ip SQL
+        json = SQLPreference.getString("ip", "");
+        SQLip = gson.fromJson(json, byte[].class);
+        SQLipFinal = EncriptadoAES.decifrar(SQLip, llave);
+
+        // Obtener usuario SQL
+        json = SQLPreference.getString("user", null);
+        SQLusuario = gson.fromJson(json, byte[].class);
+        SQLusuarioFinal = EncriptadoAES.decifrar(SQLusuario, llave);
+
+        // Obtener contraseña SQL
+        json = SQLPreference.getString("password", null);
+        SQLPassword = gson.fromJson(json, byte[].class);
+        SQLPasswordFinal = EncriptadoAES.decifrar(SQLPassword, llave);
+
+        try {
+
+            Class.forName("com.mysql.jdbc.Driver");
+
+            Connection conn = DriverManager.getConnection("jdbc:" + SQLipFinal +
+                    "?verifyServerCertificate=false", SQLusuarioFinal, SQLPasswordFinal);
+
+            Statement st = conn.createStatement();
+
+            if (descripcion != null) {
+                instruccion = "INSERT INTO PROYECTOS(presupuesto,tipo,direccion,descripcion)" +
+                        "values(" + presupuesto.getText().toString() + ", '" +
+                        spinner1.getSelectedItem().toString() + "', '" + direccion.getText().toString() +
+                        "', '" + descripcion.getText().toString() + "');";
+            }
+            else{
+                instruccion = "INSERT INTO PROYECTOS(presupuesto,tipo,direccion)" +
+                        "values(" + presupuesto.getText().toString() + ", '" +
+                        spinner1.getSelectedItem().toString() + "', '" +
+                        direccion.getText().toString()  + "');";
+            }
+
+            st.executeUpdate(instruccion);
+
+            // Guarda el nuevo estado para que siempre se ejecute ChatFragment
+            editor1 = estadoPreference.edit();
+            editor1.putString("proyecto", "Chat");
+            editor1.apply();
+
+            // servicio en segundo plano
+            requireActivity().startService(new Intent(requireActivity(), SegundoPlanoMensajesYLlaves.class));
+
+            instruccion = "SELECT id FROM PROYECTOS;";
+            resultadoQuery = st.executeQuery(instruccion);
+            contador = 0;
+
+            while (resultadoQuery.next()) {
+                contador++;
+            }
+
+            instruccion = "SELECT * FROM PERSONAS WHERE tipo = 'Profesional';";
+            resultadoQuery = st.executeQuery(instruccion);
+
+            for (int i = 0; resultadoQuery.next(); i++) {
+                if (i == 0) { // TODO: 2021-06-08 Arreglar esto luego
+
+                    ipSuya = resultadoQuery.getString("direccionIP");
+                }
+            }
+
+            // Guardar ip del otro
+            editor1 = ipPreference.edit();
+            editor1.putString("del_otro", ipSuya);
+            editor1.apply();
+
+            st.close();
+            conn.close();
+
+            KeyPair llavesCreadas = EncriptadoRSA.crearLlaves();
+
+            // Guardar la llave privada propia
+            editor1 = llaveGuardadaPreference.edit();
+            json = gson.toJson(llavesCreadas.getPrivate());
+            editor1.putString("llave_privada", json);
+            editor1.apply();
+
+            EmpaquetadoDeLlaves llaveEmpaquetada = new EmpaquetadoDeLlaves(llavesCreadas.getPublic(),
+                    EncriptadoAES.encriptar(ipSuya, passwordServidor));
+
+            // Enviar llave
+            clienteL.enviarLlaves(llaveEmpaquetada);
+
+            // Cambia el fragmento actual a ChatFragment
+            FragmentTransaction transaccion = requireActivity().getSupportFragmentManager().beginTransaction();
+            transaccion.replace(R.id.frame, frag);
+            transaccion.commit();
+
+        } catch (SQLException | ClassNotFoundException throwables) {
+            throwables.printStackTrace();
+        }
+
+    } // segundoPlano
 
 }

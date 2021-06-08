@@ -10,13 +10,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import com.databases1.betterzon.clases.ClienteSocketMensajes;
 import com.databases1.betterzon.clases.EmpaquetadoDeMensaje;
 import com.databases1.betterzon.clases.EncriptadoAES;
 import com.databases1.betterzon.clases.EncriptadoRSA;
 import com.databases1.betterzon.clases.Mensaje;
+import com.databases1.betterzon.clases.Persona;
 import com.google.gson.Gson;
 import java.security.PublicKey;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 import static android.content.Context.MODE_PRIVATE;
 
 /**
@@ -29,13 +36,16 @@ public class ChatFragmento extends Fragment {
     // Atributos
     private RecyclerView recyclerView1;
     private ListAdapterChat adapter;
-    private Button boton_send;
+    private Button boton_texto, boton_imagen;
     private EditText textbox1;
-    private SharedPreferences servidorPreference, llaveDelOtroPreference, ipOtroPreference;
-    private String ipServidor, ipOtro, passwordServidor, json;
+    private TextView nombreProfesional;
+    private SharedPreferences servidorPreference, llaveDelOtroPreference, ipOtroPreference, SQLPreference;
+    private String ipServidor, ipOtro, passwordServidor, json, SQLPasswordFinal, SQLusuarioFinal, SQLipFinal, llave, instruccion;
     private ClienteSocketMensajes clienteM;
     private PublicKey llavePublicaOtro;
     private Gson gson;
+    private byte[] SQLPassword, SQLusuario, SQLip;
+    private Persona profesional;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -84,11 +94,15 @@ public class ChatFragmento extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_chat, container, false);
 
+        llave = "Escribe tu contraseña para la llave aqui"; // TODO: 2021-06-07 this
         recyclerView1 = v.findViewById(R.id.recyclerViewChat);
-        boton_send = v.findViewById(R.id.boton_send_mensaje);
+        boton_texto = v.findViewById(R.id.boton_send_mensaje);
+        boton_imagen = v.findViewById(R.id.boton_enviar_imagen);
         textbox1 = v.findViewById(R.id.editTextMensaje);
+        nombreProfesional = v.findViewById(R.id.textViewnombreProfesionalChat);
         servidorPreference = requireActivity().getSharedPreferences("servidor", MODE_PRIVATE);
         llaveDelOtroPreference = requireActivity().getSharedPreferences("llaves_otro", MODE_PRIVATE);
+        SQLPreference = requireActivity().getSharedPreferences("SQL", MODE_PRIVATE);
         ipOtroPreference = requireActivity().getSharedPreferences("IPs", MODE_PRIVATE);
         ipServidor = servidorPreference.getString("ip", null);
         passwordServidor = servidorPreference.getString("password", null);
@@ -100,34 +114,86 @@ public class ChatFragmento extends Fragment {
         adapter = new ListAdapterChat(v.getContext());
         recyclerView1.setAdapter(adapter);
 
-        boton_send.setOnClickListener(new View.OnClickListener() {
+        boton_texto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                // TODO: 2021-06-06 Confirmar que los datos sean validos
+                if ( !(textbox1.getText().toString().equals("")) ){
+                    // TODO: 2021-06-06 Guardar mensaje en base de datos
+                    Thread hiloParaServicio = new Thread() {
 
-                // TODO: 2021-06-06 Guardar mensaje en base de datos
+                        @Override
+                        public void run() {
+                            segundoPlano();
+                        } // run
 
-                // Obtener la ip de la otra persona
-                ipOtro = ipOtroPreference.getString("del otro", null);
+                    }; // hilo
 
-                // Obtener la llave publica del otro
-                json = llaveDelOtroPreference.getString("llave_publica", null);
-                llavePublicaOtro = gson.fromJson(json, PublicKey.class);
+                    hiloParaServicio.start();
 
-                EmpaquetadoDeMensaje datosDelMensaje = new EmpaquetadoDeMensaje(
-                        EncriptadoAES.encriptar(ipOtro, passwordServidor),
-                        EncriptadoRSA.encriptarTexto(textbox1.getText().toString(), llavePublicaOtro), null);
+                } // if
 
-                // Enviar mensaje
-                clienteM.enviarMensaje(datosDelMensaje);
+            } // Onclick
 
-                // Guardar mensaje localmente
-                ListAdapterChat.addMensaje(new Mensaje(
-                        textbox1.getText().toString(), null, true));
-            }
-        });
+        }); // listener
 
         return v;
+    }
+
+    public void segundoPlano() {
+
+        // Obtener ip SQL
+        json = SQLPreference.getString("ip", "");
+        SQLip = gson.fromJson(json, byte[].class);
+        SQLipFinal = EncriptadoAES.decifrar(SQLip, llave);
+
+        // Obtener usuario SQL
+        json = SQLPreference.getString("user", null);
+        SQLusuario = gson.fromJson(json, byte[].class);
+        SQLusuarioFinal = EncriptadoAES.decifrar(SQLusuario, llave);
+
+        // Obtener contraseña SQL
+        json = SQLPreference.getString("password", null);
+        SQLPassword = gson.fromJson(json, byte[].class);
+        SQLPasswordFinal = EncriptadoAES.decifrar(SQLPassword, llave);
+
+        try {
+
+            Class.forName("com.mysql.jdbc.Driver");
+
+            Connection conn = DriverManager.getConnection("jdbc:" + SQLipFinal +
+                    "?verifyServerCertificate=false", SQLusuarioFinal, SQLPasswordFinal);
+
+            Statement st = conn.createStatement();
+
+            instruccion = "INSERT INTO MENSAJES(contenido_mesaje,fecha,hora)" +
+                    "values('" + textbox1.getText().toString() + "', CURDATE(), CURTIME() );";
+
+            st.executeUpdate(instruccion);
+
+            st.close();
+            conn.close();
+
+            // Obtener la ip de la otra persona
+            ipOtro = ipOtroPreference.getString("del otro", null);
+
+            // Obtener la llave publica del otro
+            json = llaveDelOtroPreference.getString("llave_publica", null);
+            llavePublicaOtro = gson.fromJson(json, PublicKey.class);
+
+            EmpaquetadoDeMensaje datosDelMensaje = new EmpaquetadoDeMensaje(
+                    EncriptadoAES.encriptar(ipOtro, passwordServidor),
+                    EncriptadoRSA.encriptarTexto(textbox1.getText().toString(), llavePublicaOtro), null);
+
+            // Enviar mensaje
+            clienteM.enviarMensaje(datosDelMensaje);
+
+            // Guardar mensaje localmente
+            ListAdapterChat.addMensaje(new Mensaje(
+                    textbox1.getText().toString(), null, true));
+
+        } catch (SQLException | ClassNotFoundException throwables) {
+        throwables.printStackTrace();
+        }
     }
 }

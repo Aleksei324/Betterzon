@@ -34,4 +34,5 @@
     <string name="fragment3_boton_recibir">Recibir\ndonación</string>
 
     <string name="fragmentChat_input">Escribe tu mensaje…</string>
+    <string name="fragmentChat_titulo">Asesoria del proyecto</string>
 </resources>

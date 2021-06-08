@@ -7,11 +7,11 @@
     tools:context=".ChatFragmento">
 
     <TextView
-        android:id="@+id/textView6"
+        android:id="@+id/textViewnombreProfesionalChat"
         android:layout_width="0dp"
         android:layout_height="60dp"
-        android:gravity="center_vertical"
-        android:text="@string/placeholder"
+        android:gravity="center"
+        android:text="@string/fragmentChat_titulo"
         android:textSize="34sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -26,7 +26,7 @@
         app:layout_constraintBottom_toTopOf="@+id/editTextMensaje"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView6" />
+        app:layout_constraintTop_toBottomOf="@+id/textViewnombreProfesionalChat" />
 
     <EditText
         android:id="@+id/editTextMensaje"
@@ -36,11 +36,11 @@
         android:inputType="textLongMessage"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/button5"
+        app:layout_constraintEnd_toStartOf="@+id/boton_enviar_imagen"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/button5"
+        android:id="@+id/boton_enviar_imagen"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_marginEnd="5dp"

@@ -55,8 +55,12 @@ public class LoginActivity extends AppCompatActivity implements Runnable{
 
     public void cambiarAHomeActivity(View v){
 
-        Thread hiloParaServicio = new Thread(this);
-        hiloParaServicio.start();
+        if ( !(campoCedula.getText().toString().equals("") ||
+                campoPassword.getText().toString().equals("")) ) {
+
+            Thread hiloParaServicio = new Thread(this);
+            hiloParaServicio.start();
+        }
 
     } // cambiarActivity
 
@@ -87,7 +91,7 @@ public class LoginActivity extends AppCompatActivity implements Runnable{
 
             Statement st = conn.createStatement();
 
-            instruccion = "SELECT * FROM PERSONAS WHERE cedula = " + personaCred.getCedula() + ";";
+            instruccion = "SELECT * FROM PERSONAS WHERE cedula = " + campoCedula.getText().toString() + ";";
 
             personaResultante = st.executeQuery(instruccion);
 
@@ -100,14 +104,22 @@ public class LoginActivity extends AppCompatActivity implements Runnable{
                 tipo = personaResultante.getString("tipo");
                 inhabilitado = personaResultante.getInt("inhabilitado");
 
+                st.close();
+                conn.close();
+
                 if (cedula == Integer.parseInt(campoCedula.getText().toString()) &&
                         password.equals(campoPassword.getText().toString()) && inhabilitado == 0) {
 
+                    // Obtener ip
                     ipMia = MainActivity.getIP();
 
                     editor1 = credUsuarioPreferences.edit();
                     json = gson.toJson(new Persona(cedula, celular, nombre, password, tipo, ipMia));
                     editor1.putString("persona", json);
+                    editor1.apply();
+
+                    editor1 = credUsuarioPreferences.edit();
+                    editor1.putBoolean("existe", true);
                     editor1.apply();
 
                     // Cambia la activity actual a HomeActivity
@@ -121,6 +133,10 @@ public class LoginActivity extends AppCompatActivity implements Runnable{
                 }
             }
             else {
+
+                st.close();
+                conn.close();
+
                 this.runOnUiThread(() -> {
                     Toast.makeText(this, "No existe la cuenta", Toast.LENGTH_SHORT).show();
                 });

@@ -10,10 +10,6 @@ import android.widget.Toast;
 import com.databases1.betterzon.clases.EncriptadoAES;
 import com.databases1.betterzon.clases.Persona;
 import com.google.gson.Gson;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -29,8 +25,6 @@ public class RegisterActivity extends AppCompatActivity implements Runnable {
     private byte[] SQLPassword, SQLusuario, SQLip;
     private EditText cedula, nombre, celular, password;
     private Gson gson;
-    private URL whatismyip;
-    private BufferedReader in;
     private ResultSet personaResultante;
 
     @Override
@@ -61,9 +55,12 @@ public class RegisterActivity extends AppCompatActivity implements Runnable {
 
     public void cambiarAHomeActivity(View v){
 
-        Thread hiloParaServicio = new Thread(this);
-        hiloParaServicio.start();
+        if ( !(cedula.getText().toString().equals("") || nombre.getText().toString().equals("") ||
+                celular.getText().toString().equals("") || password.getText().toString().equals("")) ) {
 
+            Thread hiloParaServicio = new Thread(this);
+            hiloParaServicio.start();
+        }
     } // cambiarActivity
 
     @Override
@@ -108,6 +105,9 @@ public class RegisterActivity extends AppCompatActivity implements Runnable {
             // Si existe una fila (lo que significa que se encontro la cedula)...
             if (personaResultante.next()) {
 
+                st.close();
+                conn.close();
+
                 this.runOnUiThread(() -> {
                     Toast.makeText(this, "Este usuario ya existe", Toast.LENGTH_SHORT).show();
                 });
@@ -119,6 +119,9 @@ public class RegisterActivity extends AppCompatActivity implements Runnable {
                         "', '" + celular.getText() + "','Cliente',0,'" + ipMia + "');";
 
                 st.executeUpdate(instruccion);
+
+                st.close();
+                conn.close();
 
                 editor1 = credencialesPreference.edit();
                 editor1.putBoolean("existe", true);
@@ -137,10 +140,6 @@ public class RegisterActivity extends AppCompatActivity implements Runnable {
                 startActivity(new Intent(this, HomeActivity.class));
                 this.finish();
             }
-
-            st.close();
-            conn.close();
-
         } catch (SQLException | ClassNotFoundException throwables) {
             throwables.printStackTrace();
             this.runOnUiThread(() -> {
