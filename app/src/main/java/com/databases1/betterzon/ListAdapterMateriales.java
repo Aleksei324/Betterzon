@@ -1,29 +1,52 @@
 package com.databases1.betterzon;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.databases1.betterzon.clases.EncriptadoAES;
 import com.databases1.betterzon.clases.Material;
+import com.google.gson.Gson;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.LinkedList;
 
-public class ListAdapterMateriales extends RecyclerView.Adapter<ViewHolderMateriales> {
+import static android.content.Context.MODE_PRIVATE;
+
+public class ListAdapterMateriales extends RecyclerView.Adapter<ViewHolderMateriales> implements Runnable {
 
     // Atributos
     private LayoutInflater mInflador;
-    private LinkedList<Material> listaItemsOriginal;
-    private LinkedList<Material> listaItems;
+    private static LinkedList<Material> listaItemsOriginal;
+    private static LinkedList<Material> listaItems;
+    private Gson gson;
+    private String json, SQLPasswordFinal, SQLusuarioFinal, SQLipFinal, llave, instruccion;
+    private SharedPreferences SQLPreference;
+    private byte[] SQLPassword, SQLusuario, SQLip;
+    private ResultSet resultadoQuery;
+    private Context c;
 
     public ListAdapterMateriales(Context contexto) {
+        llave = "Escribe tu contraseña para la llave aqui"; // TODO: 2021-06-07 this
+        SQLPreference = contexto.getSharedPreferences("SQL", MODE_PRIVATE);
+        gson = new Gson();
+        this.c = contexto;
+
         this.mInflador = LayoutInflater.from(contexto);
 
-        this.listaItemsOriginal = new LinkedList<>();
-        crearListaMateriales();
-
-        this.listaItems = new LinkedList<>();
-        this.listaItems.addAll(this.listaItemsOriginal);
+        listaItemsOriginal = new LinkedList<>();
+        listaItems = new LinkedList<>();
+        Thread segundoPlano = new Thread(this);
+        segundoPlano.start();
     }
 
     @Override
@@ -42,27 +65,61 @@ public class ListAdapterMateriales extends RecyclerView.Adapter<ViewHolderMateri
         holder.bindData(listaItems.get(position));
     }
 
-    public void crearListaMateriales(){
+    @Override
+    public void run(){
 
-        // TODO: 2021-06-03 La base de datos debe llenar esta lista
+        // Obtener ip SQL
+        json = SQLPreference.getString("ip", "");
+        SQLip = gson.fromJson(json, byte[].class);
+        SQLipFinal = EncriptadoAES.decifrar(SQLip, llave);
 
-        this.listaItemsOriginal.add(new Material(
-                123,"Arcilla azul", "Arcilla", "La mejor marca", "Un pedazo de arcilla", 123.4));
+        // Obtener usuario SQL
+        json = SQLPreference.getString("user", null);
+        SQLusuario = gson.fromJson(json, byte[].class);
+        SQLusuarioFinal = EncriptadoAES.decifrar(SQLusuario, llave);
 
-        this.listaItemsOriginal.add(new Material(
-                456,"Ladrillo de plastico", "Plastico", "La mejor marca", "De materiales reciclables", 456.7));
+        // Obtener contraseña SQL
+        json = SQLPreference.getString("password", null);
+        SQLPassword = gson.fromJson(json, byte[].class);
+        SQLPasswordFinal = EncriptadoAES.decifrar(SQLPassword, llave);
 
-        this.listaItemsOriginal.add(new Material(
-                789,"Concreto amarillo", "Concreto", "La mejor marca", "Un poco raro", 789.0));
+        try {
 
-        this.listaItemsOriginal.add(new Material(
-                1123,"Piedra roja", "Petreo", "La mejor marca", "Un pedazo de piedra", 123.4));
+            Class.forName("com.mysql.jdbc.Driver");
 
-        this.listaItemsOriginal.add(new Material(
-                1456,"Ladrillo raro", "Plastico", "La mejor marca", "De materiales reciclables", 456.7));
+            Connection conn = DriverManager.getConnection("jdbc:" + SQLipFinal +
+                    "?verifyServerCertificate=false", SQLusuarioFinal, SQLPasswordFinal);
 
-        this.listaItemsOriginal.add(new Material(
-                1789,"Concreto amarillo", "Concreto", "La mejor marca", "Un poco raro", 789.0));
+            Statement st = conn.createStatement();
+
+            instruccion = "SELECT * FROM MATERIALES";
+
+            resultadoQuery = st.executeQuery(instruccion);
+
+            while (resultadoQuery.next()){
+                listaItemsOriginal.add(new Material(
+                        resultadoQuery.getInt("codigo"),
+                        resultadoQuery.getString("nombre"),
+                        resultadoQuery.getString("tipo"),
+                        resultadoQuery.getString("marca"),
+                        resultadoQuery.getString("descripcion"),
+                        resultadoQuery.getInt("precio")));
+            }
+            st.close();
+            conn.close();
+
+            listaItems.addAll(listaItemsOriginal);
+
+            ((Activity)c).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    notifyDataSetChanged();
+                }
+            });
+
+        } catch (SQLException | ClassNotFoundException throwables) {
+        throwables.printStackTrace();
+        }
     }
 
     public void filterSearch(String search){

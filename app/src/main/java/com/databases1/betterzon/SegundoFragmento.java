@@ -106,11 +106,11 @@ public class SegundoFragmento extends Fragment{
         llaveGuardadaPreference = requireActivity().getSharedPreferences("llaves_propias", MODE_PRIVATE);
         SQLPreference = requireActivity().getSharedPreferences("SQL", MODE_PRIVATE);
         ipPreference = requireActivity().getSharedPreferences("IPs", MODE_PRIVATE);
+        gson = new Gson();
         json = datosServidorPreference.getString("ip", null);
         ipServidor = gson.fromJson(json, byte[].class);
         ipServidorFinal = EncriptadoAES.decifrar(ipServidor, llave);
         clienteL = new ClienteSocketLlaves(ipServidorFinal);
-        gson = new Gson();
 
         String [] opciones = {"Vivienda nueva", "Remodelación"};
         spinner1.setAdapter(new ArrayAdapter<>(
@@ -203,7 +203,7 @@ public class SegundoFragmento extends Fragment{
             resultadoQuery = st.executeQuery(instruccion);
 
             for (int i = 0; resultadoQuery.next(); i++) {
-                if (i == 0) { // TODO: 2021-06-08 Arreglar esto luego
+                if (i == contador) {
 
                     ipSuya = resultadoQuery.getString("direccionIP");
                 }

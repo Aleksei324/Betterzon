@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements Runnable{
 
         // Guardar la ip del servidor
         editor1 = servidorPreferences.edit();
-        json = gson.toJson(EncriptadoAES.encriptar("IP SERVIDOR",
+        json = gson.toJson(EncriptadoAES.encriptar("IP",
                 llave)); // TODO: 2021-06-06 Coloca la ip del servidor de mensajes aqui
 
         editor1.putString("ip", json);

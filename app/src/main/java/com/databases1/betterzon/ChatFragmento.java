@@ -38,14 +38,12 @@ public class ChatFragmento extends Fragment {
     private ListAdapterChat adapter;
     private Button boton_texto, boton_imagen;
     private EditText textbox1;
-    private TextView nombreProfesional;
     private SharedPreferences servidorPreference, llaveDelOtroPreference, ipOtroPreference, SQLPreference;
     private String ipServidor, ipOtro, passwordServidor, json, SQLPasswordFinal, SQLusuarioFinal, SQLipFinal, llave, instruccion;
     private ClienteSocketMensajes clienteM;
     private PublicKey llavePublicaOtro;
     private Gson gson;
     private byte[] SQLPassword, SQLusuario, SQLip;
-    private Persona profesional;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -99,7 +97,6 @@ public class ChatFragmento extends Fragment {
         boton_texto = v.findViewById(R.id.boton_send_mensaje);
         boton_imagen = v.findViewById(R.id.boton_enviar_imagen);
         textbox1 = v.findViewById(R.id.editTextMensaje);
-        nombreProfesional = v.findViewById(R.id.textViewnombreProfesionalChat);
         servidorPreference = requireActivity().getSharedPreferences("servidor", MODE_PRIVATE);
         llaveDelOtroPreference = requireActivity().getSharedPreferences("llaves_otro", MODE_PRIVATE);
         SQLPreference = requireActivity().getSharedPreferences("SQL", MODE_PRIVATE);
