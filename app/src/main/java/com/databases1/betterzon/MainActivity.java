@@ -5,15 +5,31 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import com.databases1.betterzon.clases.EncriptadoAES;
+import com.databases1.betterzon.clases.Persona;
 import com.google.gson.Gson;
 
-public class MainActivity extends AppCompatActivity {
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+public class MainActivity extends AppCompatActivity implements Runnable{
 
     // Atributos
     private SharedPreferences credUsuarioPreferences, servidorPreferences, SQLPreferences;
     private SharedPreferences.Editor editor1;
     private Gson gson;
-    private String json, llave;
+    private String json, llave, SQLPasswordFinal, SQLusuarioFinal, SQLipFinal, instruccion, nombre, password, tipo;
+    private int cedula, celular, inhabilitado;
+    private byte[] SQLPassword, SQLusuario, SQLip;
+    private Persona personaCred;
+    private ResultSet personaResultante;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,21 +104,118 @@ public class MainActivity extends AppCompatActivity {
 
         if (credUsuarioPreferences.getBoolean("existe", false)){
 
-            // TODO: 2021-06-08 Confirmar que sean validas
-
-            // servicio en segundo plano
-            startService(new Intent(this, SegundoPlanoMensajesYLlaves.class));
-
-            // Cambia la activity actual a RegisterActivity
-            startActivity(new Intent(this, HomeActivity.class));
+            Thread hiloParaServicio = new Thread(this);
+            hiloParaServicio.start();
         }
         else {
             // Cambia la activity actual a HomeActivity
             startActivity(new Intent(this, RegisterActivity.class));
+            this.finish();
         }
 
-        this.finish();
-
     } // esperarYCambiarActivity
+
+    @Override
+    public void run() {
+
+        // Obtener ip SQL
+        json = SQLPreferences.getString("ip", "");
+        SQLip = gson.fromJson(json, byte[].class);
+        SQLipFinal = EncriptadoAES.decifrar(SQLip, llave);
+
+        // Obtener usuario SQL
+        json = SQLPreferences.getString("user", null);
+        SQLusuario = gson.fromJson(json, byte[].class);
+        SQLusuarioFinal = EncriptadoAES.decifrar(SQLusuario, llave);
+
+        // Obtener contraseña SQL
+        json = SQLPreferences.getString("password", null);
+        SQLPassword = gson.fromJson(json, byte[].class);
+        SQLPasswordFinal = EncriptadoAES.decifrar(SQLPassword, llave);
+
+        // Credenciales de la persona
+        json = credUsuarioPreferences.getString("persona", null);
+        personaCred = gson.fromJson(json, Persona.class);
+
+        try {
+
+            Class.forName("com.mysql.jdbc.Driver");
+
+            Connection conn = DriverManager.getConnection("jdbc:" + SQLipFinal +
+                    "?verifyServerCertificate=false", SQLusuarioFinal, SQLPasswordFinal);
+
+            Statement st = conn.createStatement();
+
+            instruccion = "SELECT * FROM PERSONAS WHERE cedula = " + personaCred.getCedula() + ";";
+
+            personaResultante = st.executeQuery(instruccion);
+
+            if (personaResultante.next()){
+
+                cedula = personaResultante.getInt("cedula");
+                nombre = personaResultante.getString("nombre");
+                celular = personaResultante.getInt("celular");
+                password = personaResultante.getString("contraseña");
+                tipo = personaResultante.getString("tipo");
+                inhabilitado = personaResultante.getInt("inhabilitado");
+
+                if (cedula == personaCred.getCedula() && nombre.equals(personaCred.getNombre()) &&
+                        celular == personaCred.getCelular() && password.equals(personaCred.getPassword()) &&
+                        tipo.equals(personaCred.getTipo()) && inhabilitado == 0) {
+
+                    // Cambia la activity actual a RegisterActivity
+                    startActivity(new Intent(this, HomeActivity.class));
+                }
+                else {
+                    editor1 = credUsuarioPreferences.edit();
+                    editor1.putBoolean("existe", false);
+                    editor1.apply();
+
+                    // Cambia la activity actual a HomeActivity
+                    startActivity(new Intent(this, RegisterActivity.class));
+                }
+                this.finish();
+            }
+            else {
+                editor1 = credUsuarioPreferences.edit();
+                editor1.putBoolean("existe", false);
+                editor1.apply();
+
+                // Cambia la activity actual a HomeActivity
+                startActivity(new Intent(this, RegisterActivity.class));
+                this.finish();
+            }
+
+        }catch (SQLException | ClassNotFoundException throwables){
+            throwables.printStackTrace();
+        }
+    }
+
+    public static String getIP(){
+
+        String ipPropia = null;
+        URL webService;
+        BufferedReader readerIP = null;
+
+        while (ipPropia == null){
+            try {
+                // Usa un servicio de una pagina para eso
+                webService = new URL("https://ipv4.icanhazip.com/");
+                readerIP = new BufferedReader(new InputStreamReader(webService.openStream()));
+                ipPropia = readerIP.readLine();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            try {
+                if (readerIP != null){
+                    readerIP.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return ipPropia;
+    }
 
 } // clase

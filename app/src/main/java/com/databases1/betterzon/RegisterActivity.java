@@ -70,23 +70,7 @@ public class RegisterActivity extends AppCompatActivity implements Runnable {
     public void run() {
 
         // Obtener ip
-        while (ipMia == null){
-            try {
-                // Usa un servicio de una pagina para eso
-                whatismyip = new URL("https://ipv4.icanhazip.com/");
-                in = new BufferedReader(new InputStreamReader(whatismyip.openStream()));
-                ipMia = in.readLine();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            try {
-                if (in != null){
-                    in.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        ipMia = MainActivity.getIP();
 
         // Guardar ip propia localmente
         editor1 = ipPreference.edit();
