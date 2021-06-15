@@ -8,18 +8,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.databases1.betterzon.clases.EncriptadoAES;
 import com.databases1.betterzon.clases.Material;
 import com.google.gson.Gson;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.LinkedList;
-
 import static android.content.Context.MODE_PRIVATE;
 
 public class ListAdapterMateriales extends RecyclerView.Adapter<ViewHolderMateriales> implements Runnable {
@@ -68,6 +65,8 @@ public class ListAdapterMateriales extends RecyclerView.Adapter<ViewHolderMateri
     @Override
     public void run(){
 
+        listaItemsOriginal.clear();
+
         // Obtener ip SQL
         json = SQLPreference.getString("ip", "");
         SQLip = gson.fromJson(json, byte[].class);
@@ -98,12 +97,12 @@ public class ListAdapterMateriales extends RecyclerView.Adapter<ViewHolderMateri
 
             while (resultadoQuery.next()){
                 listaItemsOriginal.add(new Material(
-                        resultadoQuery.getInt("codigo"),
+                        resultadoQuery.getLong("codigo"),
                         resultadoQuery.getString("nombre"),
                         resultadoQuery.getString("tipo"),
                         resultadoQuery.getString("marca"),
                         resultadoQuery.getString("descripcion"),
-                        resultadoQuery.getInt("precio")));
+                        resultadoQuery.getDouble("precio")));
             }
             st.close();
             conn.close();

@@ -13,14 +13,12 @@ import com.databases1.betterzon.clases.EncriptadoAES;
 import com.databases1.betterzon.clases.Material;
 import com.databases1.betterzon.clases.Persona;
 import com.google.gson.Gson;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.LinkedList;
-
 import static android.content.Context.MODE_PRIVATE;
 
 public class ListAdapterDonaciones extends RecyclerView.Adapter<ViewHolderDonaciones> implements Runnable{
@@ -71,6 +69,8 @@ public class ListAdapterDonaciones extends RecyclerView.Adapter<ViewHolderDonaci
     @Override
     public void run(){
 
+        listaItemsOriginal.clear();
+
         // Obtener ip SQL
         json = SQLPreference.getString("ip", "");
         SQLip = gson.fromJson(json, byte[].class);
@@ -95,7 +95,8 @@ public class ListAdapterDonaciones extends RecyclerView.Adapter<ViewHolderDonaci
 
             Statement st = conn.createStatement();
 
-            instruccion = "SELECT * FROM DONACIONES AS D JOIN PERSONAS AS P ON D.cedula = P.cedula";
+            instruccion = "SELECT * FROM DONACIONES AS D JOIN PERSONAS AS P ON D.cedula = P.cedula " +
+                    "JOIN MATERIALES AS M ON D.codigo = M.codigo";
 
             resultadoQuery = st.executeQuery(instruccion);
 
@@ -103,10 +104,15 @@ public class ListAdapterDonaciones extends RecyclerView.Adapter<ViewHolderDonaci
 
                 listaItemsOriginal.add(new Donacion(
                         new Persona(
-                                resultadoQuery.getInt("cedula"), 0, resultadoQuery.getString("nombre"), null, null, null),
+                                resultadoQuery.getLong(1), resultadoQuery.getLong("celular"),
+                                resultadoQuery.getString(6), resultadoQuery.getString("contraseña"),
+                                resultadoQuery.getString(9), resultadoQuery.getString("direccionIP")),
                         new Material(
-                                resultadoQuery.getInt("codigo"),null, null, null, null, 0.0)));
+                                resultadoQuery.getLong(2),resultadoQuery.getString(13),
+                                resultadoQuery.getString(14), resultadoQuery.getString("marca"),
+                                resultadoQuery.getString("descripcion"), resultadoQuery.getDouble("precio"))));
             }
+
             st.close();
             conn.close();
 

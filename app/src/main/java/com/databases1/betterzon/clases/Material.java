@@ -3,11 +3,11 @@ package com.databases1.betterzon.clases;
 public class Material {
 
     //ATRIBUTOS
-    private int codigo;
+    private Long codigo;
     private String nombre, tipo, marca, descripcion;
     private double precio;
 
-    public Material(int codigo, String nombre, String tipo, String marca, String descripcion, double precio) {
+    public Material(Long codigo, String nombre, String tipo, String marca, String descripcion, double precio) {
         this.codigo = codigo;
         this.nombre = nombre;
         this.tipo = tipo;
@@ -16,11 +16,11 @@ public class Material {
         this.precio = precio;
     }
 
-    public int getCodigo() {
+    public Long getCodigo() {
         return codigo;
     }
 
-    public void setCodigo(int codigo) {
+    public void setCodigo(Long codigo) {
         this.codigo = codigo;
     }
 

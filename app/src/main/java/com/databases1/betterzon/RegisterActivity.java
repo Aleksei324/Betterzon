@@ -128,8 +128,8 @@ public class RegisterActivity extends AppCompatActivity implements Runnable {
                 editor1.apply();
 
                 editor1 = credencialesPreference.edit();
-                json = gson.toJson(new Persona(Integer.parseInt(cedula.getText().toString()),
-                        Integer.parseInt(celular.getText().toString()),
+                json = gson.toJson(new Persona(Long.parseLong(cedula.getText().toString()),
+                        Long.parseLong(celular.getText().toString()),
                         nombre.getText().toString(), password.getText().toString(),
                         "Cliente", ipMia));
 

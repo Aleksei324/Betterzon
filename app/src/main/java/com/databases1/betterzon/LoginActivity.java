@@ -24,7 +24,8 @@ public class LoginActivity extends AppCompatActivity implements Runnable{
     private SharedPreferences.Editor editor1;
     private Gson gson;
     private String json, llave, SQLPasswordFinal, SQLusuarioFinal, SQLipFinal, instruccion, nombre, password, tipo, ipMia;
-    private int cedula, celular, inhabilitado;
+    private int inhabilitado;
+    private Long cedula, celular;
     private byte[] SQLPassword, SQLusuario, SQLip;
     private ResultSet personaResultante;
     private EditText campoCedula, campoPassword;
@@ -96,9 +97,9 @@ public class LoginActivity extends AppCompatActivity implements Runnable{
 
             if (personaResultante.next()){
 
-                cedula = personaResultante.getInt("cedula");
+                cedula = personaResultante.getLong("cedula");
                 nombre = personaResultante.getString("nombre");
-                celular = personaResultante.getInt("celular");
+                celular = personaResultante.getLong("celular");
                 password = personaResultante.getString("contraseña");
                 tipo = personaResultante.getString("tipo");
                 inhabilitado = personaResultante.getInt("inhabilitado");

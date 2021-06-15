@@ -3,11 +3,11 @@ package com.databases1.betterzon.clases;
 public class Persona {
 
     // Atributo
-    private int cedula, celular;
+    private Long cedula, celular;
     private String nombre, password, tipo, ip;
     private boolean inhabilitado = false;
 
-    public Persona(int cedula, int celular, String nombre, String password, String tipo, String ip) {
+    public Persona(Long cedula, Long celular, String nombre, String password, String tipo, String ip) {
         this.cedula = cedula;
         this.celular = celular;
         this.nombre = nombre;
@@ -16,19 +16,19 @@ public class Persona {
         this.ip = ip;
     }
 
-    public int getCedula() {
+    public Long getCedula() {
         return cedula;
     }
 
-    public void setCedula(int cedula) {
+    public void setCedula(Long cedula) {
         this.cedula = cedula;
     }
 
-    public int getCelular() {
+    public Long getCelular() {
         return celular;
     }
 
-    public void setCelular(int celular) {
+    public void setCelular(Long celular) {
         this.celular = celular;
     }
 
